@@ -9,6 +9,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true
   },
-  "include": ["src", "tests"],
+  "include": ["public", "src", "tests"],
   "exclude": ["node_modules", "dist"]
 }

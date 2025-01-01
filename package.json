@@ -24,8 +24,8 @@
   ],
   "scripts": {
     "start": "node ./app.js",
-    "dev": "node --env-file=.env ./app.js",
-    "build": "npx -y prisma generate && rm -rf dist && tsup",
+    "dev": "node --env-file=env ./app.js",
+    "build": "npx -y prisma generate && tsup",
     "db:gen": "npx -y prisma migrate dev --name init",
     "db:reset": "rm -f .mi.json .bot.json prisma/app.db prisma/app.db-journal",
     "prepublish": "npm run build",
@@ -37,14 +37,16 @@
     "mi-service-lite": "^3.1.0",
     "openai": "^4.56.0",
     "prisma": "^5.14.0",
-    "proxy-agent": "^6.4.0"
+    "proxy-agent": "^6.4.0",
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.4.9",
     "tsup": "^8.0.1",
     "tsx": "^4.11.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/express": "^4.17.21"
   },
   "engines": {
     "node": ">=16"

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>音色切换控制台</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background: #f7f7f7;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .speaker-list {
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .speaker-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #e9ecef;
+        }
+        .speaker-item:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        .current-speaker {
+            background: #e3f2fd;
+            border-color: #90caf9;
+        }
+        .message {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .message.show {
+            opacity: 1;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>音色切换控制台</h1>
+        
+        <div>
+            <button class="button" onclick="toggleSpeakerDetails()">
+                切换显示模式
+            </button>
+        </div>
+
+        <div id="speakerList" class="speaker-list">
+            加载中...
+        </div>
+
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <script>
+        let showDetails = false;
+
+        async function loadSpeakers() {
+            try {
+                const response = await fetch(`/api/speaker/list?namesOnly=${!showDetails}`);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message);
+                }
+
+                const speakerList = document.getElementById('speakerList');
+                speakerList.innerHTML = '';
+
+                if (showDetails) {
+                    result.data.forEach(speaker => {
+                        const div = document.createElement('div');
+                        div.className = 'speaker-item';
+                        div.innerHTML = `
+                            <strong>名称:</strong> ${speaker.name}<br>
+                            <strong>性别:</strong> ${speaker.gender}<br>
+                            <strong>标识:</strong> ${speaker.speaker}
+                        `;
+                        div.onclick = () => switchSpeaker(speaker.speaker);
+                        speakerList.appendChild(div);
+                    });
+                } else {
+                    result.data.forEach(name => {
+                        const div = document.createElement('div');
+                        div.className = 'speaker-item';
+                        div.textContent = name;
+                        div.onclick = () => switchSpeaker(name);
+                        speakerList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                showMessage(error.message, false);
+            }
+        }
+
+        async function switchSpeaker(speaker) {
+            try {
+                const response = await fetch('/api/speaker/switch-speaker', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ speaker })
+                });
+                
+                const result = await response.json();
+                showMessage(result.message, result.success);
+                
+                if (result.success) {
+                    document.querySelectorAll('.current-speaker').forEach(el => {
+                        el.classList.remove('current-speaker');
+                    });
+                    event.currentTarget.classList.add('current-speaker');
+                }
+            } catch (error) {
+                showMessage(error.message, false);
+            }
+        }
+
+        function toggleSpeakerDetails() {
+            showDetails = !showDetails;
+            loadSpeakers();
+        }
+
+        function showMessage(text, isSuccess) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${isSuccess ? 'success' : 'error'}`;
+            messageDiv.style.display = 'block';
+            messageDiv.classList.add('show');
+            
+            setTimeout(() => {
+                messageDiv.classList.remove('show');
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 300);
+            }, 2700);
+        }
+
+        // 初始加载
+        loadSpeakers();
+    </script>
+</body>
+</html>

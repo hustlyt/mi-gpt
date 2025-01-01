@@ -4,6 +4,9 @@ import { getDBInfo, initDB, runWithDB } from "./services/db";
 import { kBannerASCII } from "./utils/string";
 import { Logger } from "./utils/log";
 import { deleteFile } from "./utils/io";
+import express from 'express';
+import { createSpeakerAPI } from './services/api';
+import path from "path";
 
 export type MiGPTConfig = Omit<MyBotConfig, "speaker"> & {
   speaker: Omit<AISpeakerConfig, "name">;
@@ -55,7 +58,21 @@ export class MiGPT {
       console.log(kBannerASCII);
       return this.ai.run();
     };
+    this.apiService();
     return runWithDB(main);
+  }
+
+  async apiService() {
+    const app = express();
+    app.use(express.json());
+    // 添加静态文件服务
+    app.use(express.static(path.join(process.cwd(), 'public')));
+    // 使用 speaker API 路由
+    app.use('/api/speaker', createSpeakerAPI(this.speaker));
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`服务器运行在端口 ${PORT}`);
+    });
   }
 
   async stop() {
