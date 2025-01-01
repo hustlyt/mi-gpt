@@ -12,4 +12,5 @@ export default defineConfig(() => ({
   clean: true,
   shims: true,
   dts: true, // Generate declaration file
+  publicDir: 'public', // 将 public 目录下的文件复制到 dist
 }));
