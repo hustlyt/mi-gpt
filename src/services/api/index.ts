@@ -20,14 +20,14 @@ export function createSpeakerAPI(speaker: AISpeaker) {
       
       if (success) {
         await speaker.response({
-          text: "音色已切换！",
+          text: `音色已切换为${speakerName}`,
           keepAlive: speaker.keepAlive
         });
       }
 
       return res.json({ 
         success, 
-        message: success ? '音色切换成功' : '音色切换失败'
+        message: success ? `音色已切换为${speakerName}` : '音色切换失败'
       });
 
     } catch (error) {

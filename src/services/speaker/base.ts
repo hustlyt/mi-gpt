@@ -429,9 +429,13 @@ export class BaseSpeaker {
     const target = this._speakers.find(
       (e) => e.name === speaker || e.speaker === speaker
     );
+    console.log(target);
     if (target) {
       this._currentSpeaker = target.speaker;
       return true;
+    }if (this.debug) {
+      this.logger.debug(`speaker不存在：${speaker}`);
+      return false;
     }
   }
 }

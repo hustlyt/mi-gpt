@@ -118,7 +118,7 @@
                             <strong>性别:</strong> ${speaker.gender}<br>
                             <strong>标识:</strong> ${speaker.speaker}
                         `;
-                        div.onclick = () => switchSpeaker(speaker.speaker);
+                        div.onclick = () => switchSpeaker(speaker.name);
                         speakerList.appendChild(div);
                     });
                 } else {

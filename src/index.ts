@@ -66,7 +66,7 @@ export class MiGPT {
     const app = express();
     app.use(express.json());
     // 添加静态文件服务
-    app.use(express.static(path.join(process.cwd(), 'public')));
+    app.use(express.static(path.join(process.cwd(), 'dist')));
     // 使用 speaker API 路由
     app.use('/api/speaker', createSpeakerAPI(this.speaker));
     const PORT = process.env.PORT || 3000;
